@@ -1,25 +1,47 @@
 #include "game.h"
 #include "constants.h"
+#include "utils.h"
 #include "vector.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_scancode.h>
 #include <stdio.h>
 
-void update_player(struct player player, struct vec2 direction_vector,
-                   double turn_velocity) {
+bool out_of_bounds(struct vec2 position, int w, int h) {
+  if (position.x < w / 2.0)
+    return true;
+  if (position.x > (WINDOW_WIDTH - w) / 2.0)
+    return true;
+  if (position.y > WINDOW_HEIGHT - h / 2.0)
+    return true;
+  if (position.y < h / 2.0)
+    return true;
 
-  player.body->x += direction_vector.x;
-  player.body->y += direction_vector.y;
-  if (player.body->x < 0)
-    player.body->x = 0;
-  if (player.body->x > WINDOW_WIDTH / 2.0 - player.body->w)
-    player.body->x = WINDOW_WIDTH / 2.0 - player.body->w;
-  if (player.body->y > WINDOW_HEIGHT - player.body->h)
-    player.body->y = WINDOW_HEIGHT - player.body->h;
-  if (player.body->y < 0)
-    player.body->y = 0;
+  return false;
+}
 
-  *player.facing_rads += turn_velocity;
+bool colliding_with_wall(struct hitbox hitbox, struct wall wall) {
+  bool top = line_line(wall.point1, wall.point2, *hitbox.top_left,
+                       *hitbox.top_right, NULL);
+  bool right = line_line(wall.point1, wall.point2, *hitbox.top_right,
+                         *hitbox.bottom_right, NULL);
+  bool bottom = line_line(wall.point1, wall.point2, *hitbox.bottom_right,
+                          *hitbox.bottom_left, NULL);
+  bool left = line_line(wall.point1, wall.point2, *hitbox.bottom_left,
+                        *hitbox.top_left, NULL);
+
+  return (top || right || bottom || left);
+}
+
+bool colliding_with_walls(struct hitbox hitbox, struct level level) {
+  for (int i = 0; i < level.wall_count; i++) {
+    if (colliding_with_wall(hitbox, level.walls[i])) {
+      printf("Wall: (%f,%f), (%f,%f)\n", level.walls[i].point1.x,
+             level.walls[i].point1.y, level.walls[i].point2.x,
+             level.walls[i].point2.y);
+      return true;
+    }
+  }
+  return false;
 }
 
 void handle_game_update(struct game *game, bool *held_keys, double deltatime) {
@@ -46,10 +68,7 @@ void handle_game_update(struct game *game, bool *held_keys, double deltatime) {
   }
 
   normalise(&direction);
-  multiply_vector(&direction, game->player_speed * deltatime);
 
-  printf("direction: %.2f %.2f\n", direction.x, direction.y);
-
-  update_player(game->player, direction,
-                turn_velocity * deltatime * game->turning_speed);
+  update_player(game->player, *game->level, direction, turn_velocity,
+                deltatime);
 }

@@ -1,6 +1,8 @@
 #include "constants.h"
 #include "events.h"
 #include "game.h"
+#include "level.h"
+#include "player.h"
 #include <SDL3/SDL.h>
 
 #include <SDL3/SDL_pixels.h>
@@ -8,19 +10,19 @@
 #include <SDL3/SDL_surface.h>
 #include <stdio.h>
 
-void update_renderer(SDL_Renderer *renderer, struct game *game,
-                     SDL_Texture *player_texture) {
+void update_renderer(SDL_Renderer *renderer, struct game *game) {
   // Draw to screen
   SDL_SetRenderDrawColor(renderer, 51, 51, 51, 255);
   SDL_RenderClear(renderer);
 
-  SDL_RenderTextureRotated(renderer, player_texture, NULL, game->player.body,
-                           *(game->player.facing_rads) * (180 / 3.14), NULL,
-                           SDL_FLIP_NONE);
+  draw_player(renderer, game->player.hitbox);
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderLine(renderer, WINDOW_WIDTH / 2.0, 0, WINDOW_WIDTH / 2.0,
                  WINDOW_HEIGHT);
+
+  // DRAW THE LEVEL
+  draw_level(renderer, game->level);
 
   SDL_RenderPresent(renderer);
 }
@@ -39,20 +41,16 @@ int main() {
             SDL_GetError());
   }
 
-  // Texture for player
-
   // GAME
-  double facing = 0;
-  struct player player = {&(SDL_FRect){0, 0, 50, 50}, &facing};
-  struct game game = {player, 500.0, 5.0};
+  struct player player =
+      create_player(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2, 50, 50, 500.0, 200.0);
 
-  SDL_Surface *player_surface =
-      SDL_CreateSurface(player.body->w, player.body->h, SDL_PIXELFORMAT_RGBA32);
+  printf("Created player\n");
 
-  SDL_FillSurfaceRect(player_surface, &(SDL_Rect){0, 0, 50, 50}, 0xff0000ff);
+  struct level *level = create_level();
+  printf("Created level\n");
 
-  SDL_Texture *player_texture =
-      SDL_CreateTextureFromSurface(renderer, player_surface);
+  struct game game = {player, level};
 
   // KEYS HELD
   bool held_keys[SDL_SCANCODE_COUNT];
@@ -75,7 +73,7 @@ int main() {
       frame1 = frame2;
       handle_game_update(&game, held_keys, deltatime);
 
-      update_renderer(renderer, &game, player_texture);
+      update_renderer(renderer, &game);
     }
   }
 
