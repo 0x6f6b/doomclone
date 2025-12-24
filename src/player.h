@@ -14,6 +14,7 @@ struct hitbox {
 
 struct player {
   struct vec2 *position;
+  struct vec2 *rays;
   struct hitbox hitbox;
   int width;
   int height;
@@ -27,10 +28,11 @@ struct player create_player(int x, int y, int w, int h, double movement_speed,
 
 void update_hitbox(struct player player, struct vec2 position);
 
-void update_player(struct player player, struct level level,
+void update_player(struct player *player, struct level level,
                    struct vec2 direction_vector, double turn_velocity,
                    double deltatime);
 
-void draw_player(SDL_Renderer *renderer, struct hitbox hitbox);
+void draw_player(SDL_Renderer *renderer, struct player player);
 
+void raycast(struct player player, struct level level);
 #endif

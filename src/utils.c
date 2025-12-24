@@ -1,7 +1,6 @@
 #include "utils.h"
 #include "vector.h"
 #include <stdbool.h>
-#include <stdio.h>
 #include <wchar.h>
 
 bool line_line(struct vec2 p1, struct vec2 p2, struct vec2 p3, struct vec2 p4,
@@ -17,11 +16,6 @@ bool line_line(struct vec2 p1, struct vec2 p2, struct vec2 p3, struct vec2 p4,
       intersection->x = p1.x + uA * (p2.x - p1.x);
       intersection->y = p1.y + uA * (p2.y - p1.y);
     }
-
-    printf("Collision found (%.2f, %.2f)\n", p1.x + uA * (p2.x - p1.x),
-           p1.y + uA * (p2.y - p1.y));
-
-    printf("UA: (%.2f) UB: (%.2f)\n", uA, uB);
 
     return true;
   }

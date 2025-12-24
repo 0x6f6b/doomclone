@@ -35,9 +35,6 @@ bool colliding_with_wall(struct hitbox hitbox, struct wall wall) {
 bool colliding_with_walls(struct hitbox hitbox, struct level level) {
   for (int i = 0; i < level.wall_count; i++) {
     if (colliding_with_wall(hitbox, level.walls[i])) {
-      printf("Wall: (%f,%f), (%f,%f)\n", level.walls[i].point1.x,
-             level.walls[i].point1.y, level.walls[i].point2.x,
-             level.walls[i].point2.y);
       return true;
     }
   }
@@ -69,6 +66,6 @@ void handle_game_update(struct game *game, bool *held_keys, double deltatime) {
 
   normalise(&direction);
 
-  update_player(game->player, *game->level, direction, turn_velocity,
+  update_player(&game->player, *game->level, direction, turn_velocity,
                 deltatime);
 }

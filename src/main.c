@@ -15,7 +15,7 @@ void update_renderer(SDL_Renderer *renderer, struct game *game) {
   SDL_SetRenderDrawColor(renderer, 51, 51, 51, 255);
   SDL_RenderClear(renderer);
 
-  draw_player(renderer, game->player.hitbox);
+  draw_player(renderer, game->player);
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderLine(renderer, WINDOW_WIDTH / 2.0, 0, WINDOW_WIDTH / 2.0,
@@ -43,13 +43,9 @@ int main() {
 
   // GAME
   struct player player =
-      create_player(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2, 50, 50, 500.0, 200.0);
-
-  printf("Created player\n");
+      create_player(WINDOW_WIDTH / 4, WINDOW_HEIGHT / 2, 50, 50, 500.0, 10.0);
 
   struct level *level = create_level();
-  printf("Created level\n");
-
   struct game game = {player, level};
 
   // KEYS HELD
@@ -68,7 +64,7 @@ int main() {
     frame2 = SDL_GetTicksNS();
     deltatime = (double)(frame2 - frame1) / NANOSECONDS_IN_SECOND;
     if (deltatime >= 1.0f / FPS) {
-      // printf("FPS:%.2f\n", 1.0f / deltatime);
+      printf("FPS:%.2f\n", 1.0f / deltatime);
 
       frame1 = frame2;
       handle_game_update(&game, held_keys, deltatime);

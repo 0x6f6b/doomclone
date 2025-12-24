@@ -24,12 +24,16 @@ void divide_vector(struct vec2 *vector, double divisor) {
 }
 
 void normalise(struct vec2 *vector) {
-  double magnitude = sqrt(pow(vector->x, 2) + pow(vector->y, 2));
+  double magnitude = vector_magnitude(*vector);
 
   if (magnitude == 0)
     return;
 
   divide_vector(vector, magnitude);
+}
+
+double vector_magnitude(struct vec2 vector) {
+  return sqrt(pow(vector.x, 2) + pow(vector.y, 2));
 }
 
 struct vec2 *create_vector(int x, int y) {

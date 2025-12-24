@@ -19,17 +19,20 @@ struct wall create_wall(double x1, double y1, double x2, double y2,
 }
 
 struct level *create_level() {
-  struct wall *walls = calloc(10000, sizeof(struct wall));
+  struct wall *walls = calloc(100, sizeof(struct wall));
 
-  for (int i = 0; i < 10000; i++) {
+  // for (int i = 0; i < 100; i++) {
 
-    walls[i] = create_wall(i * (800.0 / 10000), 100, (i + 1) * (800.0 / 10000),
-                           300, (SDL_Color){0, 255, 0, 255});
-  }
+  //   walls[i] =
+  //       create_wall(i * 8, 100, (i + 1) * 8, 300, (SDL_Color){0, 255, 0,
+  //       255});
+  // }
+
+  walls[0] = create_wall(200, 200, 800, 300, (SDL_Color){0, 255, 0, 255});
 
   struct level *level = calloc(1, sizeof(struct level));
   level->walls = walls;
-  level->wall_count = 10000;
+  level->wall_count = 100;
 
   return level;
 }
